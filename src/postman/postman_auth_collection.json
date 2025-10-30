@@ -1,0 +1,729 @@
+{
+  "info": {
+    "name": "Trading Master API",
+    "description": "Complete API collection for Trading Master Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3333",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth - Public",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token', response.data.token);",
+                  "    pm.collectionVariables.set('refreshToken', response.data.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"role\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token', response.data.token);",
+                  "    pm.collectionVariables.set('refreshToken', response.data.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "login"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token', response.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "refresh"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User - Protected",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Smith\",\n  \"email\": \"jane.smith@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newpassword456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - User Management",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/all?limit=50&offset=0",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "all"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                },
+                {
+                  "key": "role",
+                  "value": "user",
+                  "disabled": true
+                },
+                {
+                  "key": "isActive",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "john",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update User by ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\",\n  \"role\": \"trader\",\n  \"isActive\": true,\n  \"emailVerified\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/user/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "1"]
+            }
+          }
+        },
+        {
+          "name": "Verify User Email",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/1/verify-email",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "1", "verify-email"]
+            }
+          }
+        },
+        {
+          "name": "Delete User (Soft)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete User (Hard)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/user/1/hard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "user", "1", "hard"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gap Analysis",
+      "item": [
+        {
+          "name": "Analyze Gaps",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/gap?symbol=AAPL&from=2025-09-22&to=2025-10-22",
+              "host": ["{{base_url}}"],
+              "path": ["api", "gap"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "AAPL"
+                },
+                {
+                  "key": "from",
+                  "value": "2025-09-22"
+                },
+                {
+                  "key": "to",
+                  "value": "2025-10-22"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Today's Gap Analysis",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/gap/today?symbol=AAPL",
+              "host": ["{{base_url}}"],
+              "path": ["api", "gap", "today"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "AAPL"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ORB Analysis",
+      "item": [
+        {
+          "name": "Analyze ORB",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orb?symbol=AAPL&from=2025-09-22&to=2025-10-22&orMinutes=15",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orb"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "AAPL"
+                },
+                {
+                  "key": "from",
+                  "value": "2025-09-22"
+                },
+                {
+                  "key": "to",
+                  "value": "2025-10-22"
+                },
+                {
+                  "key": "orMinutes",
+                  "value": "15"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "IB Analysis",
+      "item": [
+        {
+          "name": "Analyze IB",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ib?symbol=AAPL&from=2025-09-22&to=2025-10-22&orMinutes=60",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ib"],
+              "query": [
+                {
+                  "key": "symbol",
+                  "value": "AAPL"
+                },
+                {
+                  "key": "from",
+                  "value": "2025-09-22"
+                },
+                {
+                  "key": "to",
+                  "value": "2025-10-22"
+                },
+                {
+                  "key": "orMinutes",
+                  "value": "60"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ticker Management",
+      "item": [
+        {
+          "name": "Get All Tickers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ticker?limit=100&offset=0",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ticker"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                },
+                {
+                  "key": "active",
+                  "value": "true",
+                  "disabled": true
+                },
+                {
+                  "key": "market",
+                  "value": "stocks",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "common",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Tickers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ticker/search?q=AAPL&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ticker", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "AAPL"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Ticker Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ticker/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ticker", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Tickers by Market",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ticker/market/stocks?limit=100&offset=0",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ticker", "market", "stocks"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Ticker by Symbol",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ticker/AAPL",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ticker", "AAPL"]
+            }
+          }
+        },
+        {
+          "name": "Create Ticker",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"symbol\": \"NEWSTOCK\",\n  \"name\": \"New Stock Company\",\n  \"market\": \"stocks\",\n  \"type\": \"common\",\n  \"active\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ticker",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ticker"]
+            }
+          }
+        },
+        {
+          "name": "Bulk Create/Update Tickers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tickers\": [\n    {\n      \"symbol\": \"STOCK1\",\n      \"name\": \"Stock One Inc\",\n      \"market\": \"stocks\",\n      \"type\": \"common\",\n      \"active\": true\n    },\n    {\n      \"symbol\": \"STOCK2\",\n      \"name\": \"Stock Two Corp\",\n      \"market\": \"stocks\",\n      \"type\": \"common\",\n      \"active\": true\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ticker/bulk",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ticker", "bulk"]
+            }
+          }
+        },
+        {
+          "name": "Update Ticker",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Stock Name\",\n  \"active\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ticker/AAPL",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ticker", "AAPL"]
+            }
+          }
+        },
+        {
+          "name": "Delete Ticker",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ticker/AAPL",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ticker", "AAPL"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/api/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "health"]
+        }
+      }
+    }
+  ]
+}

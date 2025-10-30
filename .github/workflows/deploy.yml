@@ -1,0 +1,66 @@
+name: Deploy
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Set up SSH key for deployment
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.VPS_IP }} > ~/.ssh/known_hosts
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
+      - name: Debugging
+        run: |
+          echo "VPS_IP: ${{ secrets.VPS_IP }}"
+          echo "VPS_USERNAME: ${{ secrets.VPS_USERNAME }}"
+          ls -la ~/.ssh
+          cat ~/.ssh/known_hosts
+
+      - name: Deploy to Server
+        run: |
+          ssh -v -o "StrictHostKeyChecking no" -p 22 ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_IP }} << 'EOF'
+
+            if ! command -v node &> /dev/null; then
+              curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+              sudo apt-get install -y nodejs
+            fi
+
+            if ! command -v npm &> /dev/null; then
+              sudo apt-get install -y npm
+            fi
+
+            if ! command -v pm2 &> /dev/null; then
+              sudo npm install -g pm2
+            fi
+
+            # Verify installations
+            node -v
+            npm -v
+            pm2 -v
+
+            cd /var/www/trading-master-backend || exit 1
+
+            git pull
+            npm install
+            rm -rf dist
+            pm2 delete trading-master-backend || true
+            npm run build
+            pm2 start "npm start" --name "trading-master-backend"
+          EOF
