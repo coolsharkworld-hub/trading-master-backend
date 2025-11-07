@@ -80,7 +80,7 @@ const getRecentTradingDay = async (symbol: string, startDate: string, endDate: s
   const data = await getStockData(symbol, startDate, endDate, 'day', 1)
 
   if (data.length === 0) {
-    throw new ApiValidationError('No previous trading day data found')
+    throw new ApiValidationError('No previous day data found')
   }
 
   return data[data.length - 1]
